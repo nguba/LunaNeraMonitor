@@ -5,36 +5,82 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.0/jquery.min.js"
             integrity="sha512-K7Zj7PGsHk2fpY3Jwvbuo9nKc541MofFrrLaUUO9zqghnJxbZ3Zn35W/ZeXvbT2RtSujxGbw8PgkqpoZXXbGhw=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css"/>
+    <script src="./code/highstock.js"></script>
+    <script src="./code/modules/data.js"></script>
+    <script src="./code/modules/exporting.js"></script>
+    <script src="./code/modules/export-data.js"></script>
+    <script src="./code/themes/dark-unica.js"></script>
 </head>
 <body>
-<div id="div_g" style="width:600px; height:300px;"></div>
+
+<div id="container" style="height: 800px; min-width: 310px"></div>
 <script type="text/javascript">
-    $(document).ready(function () {
-            var data = [];
 
-            var g = new Dygraph(document.getElementById("div_g"), data,
-                {
-                    drawPoints: true,
-                    showRoller: true,
-                    //valueRange: [0.0, 80],
-                    labels: ['Time', 'Temperature']
-                });
-            // It sucks that these things aren't objects, and we need to store state in window.
-            window.intervalId = setInterval(function () {
-                var x = new Date();  // current time
-                 $.get("/pxu", function (result) {
-                     console.log(typeof result); // string
-                     console.log(data); // HTML content of the jQuery.ajax page
-                     data.push([x, result.pv]);
-                });
-                //var y = Math.random();
+    Highcharts.stockChart('container', {
+        chart: {
+            events: {
+                load: function () {
+                    // set up the updating of the chart each second
+                    const series = this.series[0];
+                    setInterval(function () {
+                        $.get("/pxu", function (result) {
+                            const x = (new Date()).getTime(), // current time
+                            y = result.pv
+                            series.addPoint([x, result.pv], true, true);
+                        });
 
-                g.updateOptions({'file': data});
-            }, 500);
-        }
-    );
+                    }, 1000);
+                }
+            }
+        },
+
+        time: {
+            useUTC: false
+        },
+
+        rangeSelector: {
+            buttons: [{
+                count: 1,
+                type: 'minute',
+                text: '1M'
+            }, {
+                count: 5,
+                type: 'minute',
+                text: '5M'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+            inputEnabled: false,
+            selected: 0
+        },
+
+        title: {
+            text: 'Fermentation'
+        },
+
+        exporting: {
+            enabled: false
+        },
+
+        series: [{
+            name: 'Temperature',
+            data: (function () {
+                // generate an array of random data
+                let data = [],
+                    time = (new Date()).getTime(),
+                    i;
+                // useful for populating historical data on reload here...
+                for (i = -999; i <= 0; i += 1) {
+                    data.push([
+                        time + i * 1000,
+                        0
+                    ]);
+                }
+                return data;
+            }())
+        }]
+    });
 </script>
 </body>
 </html>
