@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Luna Nera III</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.0/jquery.min.js"
+            integrity="sha512-K7Zj7PGsHk2fpY3Jwvbuo9nKc541MofFrrLaUUO9zqghnJxbZ3Zn35W/ZeXvbT2RtSujxGbw8PgkqpoZXXbGhw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css"/>
+</head>
+<body>
+<div id="div_g" style="width:600px; height:300px;"></div>
+<script type="text/javascript">
+    $(document).ready(function () {
+            var data = [];
+            var t = new Date();
+            for (var i = 10; i >= 0; i--) {
+                var x = new Date(t.getTime() - i * 1000);
+                data.push([x, Math.random()]);
+            }
+
+            var g = new Dygraph(document.getElementById("div_g"), data,
+                {
+                    drawPoints: true,
+                    showRoller: true,
+                    valueRange: [0.0, 1.2],
+                    labels: ['Time', 'Random']
+                });
+            // It sucks that these things aren't objects, and we need to store state in window.
+            window.intervalId = setInterval(function () {
+                var x = new Date();  // current time
+                 $.get("/pxu", function (result) {
+                     console.log(typeof result); // string
+                     console.log(data); // HTML content of the jQuery.ajax page
+                     data.push([x, result.pv]);
+                });
+                //var y = Math.random();
+
+                g.updateOptions({'file': data});
+            }, 2000);
+        }
+    );
+</script>
+</body>
+</html>
