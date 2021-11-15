@@ -12,8 +12,14 @@ class PXU:
         self.instrument.serial.bytesize = 8
         self.instrument.serial.parity = minimalmodbus.serial.PARITY_NONE
         self.instrument.serial.stopbits = 1
-        self.instrument.serial.timeout = 0.05
+        self.instrument.serial.timeout = 0.5
         self.instrument.mode = minimalmodbus.MODE_RTU
+
+    def read_pv(self):
+        return self.instrument.read_register(0, 1)
+
+    def is_open(self):
+        return self.instrument.serial.is_open
 
     def close(self):
         self.instrument.serial.close()
