@@ -55,13 +55,11 @@ class Message(dict):
 @app.route('/pxu')
 def update_reading():
     msg = Message(server.read_pv(), time.time() * 1000)
-    json = jsonify(
-        msg
-    )
-    print(json.json)
     dump(msg, server.fermentationLog, indent=0)
     server.fermentationLog.flush()
-    return json
+    return jsonify(
+        msg
+    )
 
 
 if __name__ == '__main__':
