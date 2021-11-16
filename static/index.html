@@ -12,7 +12,6 @@
     <script src="./code/themes/dark-unica.js"></script>
 </head>
 <body>
-
 <div id="container" style="height: 800px; min-width: 310px"></div>
 <script type="text/javascript">
 
@@ -24,9 +23,7 @@
                     const series = this.series[0];
                     setInterval(function () {
                         $.get("/pxu", function (result) {
-                            const x = (new Date()).getTime(), // current time
-                            y = result.pv
-                            series.addPoint([x, result.pv], true, true);
+                            series.addPoint([result.k, result.v], true, true);
                         });
 
                     }, 1000);

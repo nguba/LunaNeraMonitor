@@ -16,7 +16,12 @@ class PXU:
         self.instrument.mode = minimalmodbus.MODE_RTU
 
     def read_pv(self):
-        return self.instrument.read_register(0, 1)
+        pv = 0
+        try:
+            pv = self.instrument.read_register(0, 1)
+        except minimalmodbus.NoResponseError as error:
+            print(error)
+        return pv
 
     def is_open(self):
         return self.instrument.serial.is_open
