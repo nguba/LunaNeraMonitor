@@ -12,6 +12,9 @@
     <script src="./code/themes/dark-unica.js"></script>
 </head>
 <body>
+<h1>Fermentation</h1>
+<p>Controller <b><label id ="status">off</label></b></p>
+
 <div id="container" style="height: 800px; min-width: 310px"></div>
 <script type="text/javascript">
 
@@ -24,9 +27,10 @@
                     setInterval(function () {
                         $.get("/pxu", function (result) {
                             series.addPoint([result.k, result.v], true, true);
+                            $('#status').text(result.s);
                         });
 
-                    }, 1000);
+                    }, 10000);
                 }
             }
         },
